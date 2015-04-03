@@ -5,14 +5,17 @@ namespace CertificateAuthority
 {
     class AnswerOpenSslForDevice : AnswerOpenSslTemplate
     {
-        public AnswerOpenSslForDevice(Process process)
+        private readonly string _commonName;
+
+        public AnswerOpenSslForDevice(Process process,string commonName)
             : base(process)
         {
+            _commonName = commonName;
         }
 
         protected override void Commonz()
         {
-            Process.StandardInput.WriteLine("*.ltfinc.dev"); //common
+            Process.StandardInput.WriteLine(_commonName); //common
         }
 
         protected override void Afterz()

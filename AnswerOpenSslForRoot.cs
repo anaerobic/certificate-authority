@@ -1,18 +1,20 @@
-using System;
 using System.Diagnostics;
 
 namespace CertificateAuthority
 {
     class AnswerOpenSslForRoot : AnswerOpenSslTemplate
     {
-        public AnswerOpenSslForRoot(Process process)
+        private readonly string _commonName;
+
+        public AnswerOpenSslForRoot(Process process, string commonName)
             : base(process)
         {
+            _commonName = commonName;
         }
 
         protected override void Commonz()
         {
-            Process.StandardInput.WriteLine("Team LEGO Root CA"); //common
+            Process.StandardInput.WriteLine(_commonName); //common
         }
     }
 }

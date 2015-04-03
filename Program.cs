@@ -24,7 +24,8 @@ namespace CertificateAuthority
                 configSubAltDoms = " -config \"" + subAltDomsPath + "\"",
                 certName = "*.ltfinc.dev",
                 password = "12345",
-                rootName = "Team LEGO Root CA";
+                rootName = "Team LEGO Root CA",
+                domainName = "*.ltfinc.dev";
 
             if (!Directory.Exists(sslPath))
             {
@@ -58,7 +59,7 @@ namespace CertificateAuthority
                             rootPath) +
                         configOpenssl);
 
-                    new AnswerOpenSslForRoot(process).Answer();
+                    new AnswerOpenSslForRoot(process, rootName).Answer();
 
                     Thread.Sleep(3000);
                 }
@@ -95,7 +96,7 @@ namespace CertificateAuthority
                                                         devicePath) +
                                                     configSubAltDoms);
 
-                    new AnswerOpenSslForDevice(process).Answer();
+                    new AnswerOpenSslForDevice(process, domainName).Answer();
 
                     Thread.Sleep(3000);
 
@@ -140,7 +141,7 @@ namespace CertificateAuthority
 
                 var x509 = new X509Certificate2(Path.Combine(devicePath, "device.crt"));
 
-                var ps1 = CertificateAuthority.Resources.template
+                var ps1 = Resources.template
                     .Replace("{rootCertPath}", Path.Combine(rootPath, "rootCA.pfx"))
                     .Replace("{deviceCertPath}", Path.Combine(devicePath, "device.pfx"))
                     .Replace("{thumbprint}", x509.Thumbprint.ToLower());

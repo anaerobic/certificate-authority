@@ -99,6 +99,7 @@ build.ok
 *.diff
 *.vsdiff
 *.vserr
+.vs
 
 *.userprefs
 extras
