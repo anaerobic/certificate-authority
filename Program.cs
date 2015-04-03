@@ -149,6 +149,8 @@ namespace CertificateAuthority
                 var x509 = new X509Certificate2(Path.Combine(devicePath, "device.crt"));
 
                 var ps1 = Resources.ps1template
+                    .Replace("{rootPassword}", rootPassword)
+                    .Replace("{devicePassword}", devicePassword)
                     .Replace("{rootCertPath}", Path.Combine(rootPath, "rootCA.pfx"))
                     .Replace("{deviceCertPath}", Path.Combine(devicePath, "device.pfx"))
                     .Replace("{thumbprint}", x509.Thumbprint.ToLower());

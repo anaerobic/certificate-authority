@@ -14,9 +14,9 @@
 	$store.close()
 }
 
-Import-PfxCertificate "{rootCertPath}" "LocalMachine" "Root" "12345"
+Import-PfxCertificate "{rootCertPath}" "LocalMachine" "Root" {rootPassword}
 
-Import-PfxCertificate "{deviceCertPath}" "LocalMachine" "My" "12345"
+Import-PfxCertificate "{deviceCertPath}" "LocalMachine" "My" {devicePassword}
 
 netsh http delete sslcert ipport=0.0.0.0:44333
 
