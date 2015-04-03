@@ -18,10 +18,10 @@ Import-PfxCertificate "{rootCertPath}" "LocalMachine" "Root" {rootPassword}
 
 Import-PfxCertificate "{deviceCertPath}" "LocalMachine" "My" {devicePassword}
 
-netsh http delete sslcert ipport=0.0.0.0:44333
+netsh http delete sslcert ipport={ipPort}
 
 $guid = [guid]::NewGuid()
 
-$Command = "http add sslcert ipport=0.0.0.0:44333 certhash={thumbprint} appid={$guid}"
+$Command = "http add sslcert ipport={ipPort} certhash={thumbprint} appid={$guid}"
 $Command | netsh
 

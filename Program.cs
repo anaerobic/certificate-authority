@@ -26,7 +26,8 @@ namespace CertificateAuthority
                 rootPassword = ConfigurationManager.AppSettings["RootPassword"],
                 rootName = ConfigurationManager.AppSettings["RootName"],
                 deviceName = ConfigurationManager.AppSettings["DeviceName"],
-                devicePassword = ConfigurationManager.AppSettings["DevicePassword"];
+                devicePassword = ConfigurationManager.AppSettings["DevicePassword"],
+                hostIpPort = ConfigurationManager.AppSettings["HostIpPort"];
 
             int deviceDays;
             if (!int.TryParse(ConfigurationManager.AppSettings["DeviceDays"], out deviceDays))
@@ -151,6 +152,7 @@ namespace CertificateAuthority
                 var ps1 = Resources.ps1template
                     .Replace("{rootPassword}", rootPassword)
                     .Replace("{devicePassword}", devicePassword)
+                    .Replace("{ipPort}", hostIpPort)
                     .Replace("{rootCertPath}", Path.Combine(rootPath, "rootCA.pfx"))
                     .Replace("{deviceCertPath}", Path.Combine(devicePath, "device.pfx"))
                     .Replace("{thumbprint}", x509.Thumbprint.ToLower());
