@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
@@ -22,10 +23,16 @@ namespace CertificateAuthority
                 configOpenssl = " -config \"" + configPath + "\"",
                 subAltDomsPath = Path.Combine(Environment.CurrentDirectory, "openssl\\subaltdoms.cnf"),
                 configSubAltDoms = " -config \"" + subAltDomsPath + "\"",
-                certName = "*.ltfinc.dev",
-                password = "12345",
-                rootName = "Team LEGO Root CA",
-                domainName = "*.ltfinc.dev";
+                rootPassword = ConfigurationManager.AppSettings["RootPassword"],
+                rootName = ConfigurationManager.AppSettings["RootName"],
+                deviceName = ConfigurationManager.AppSettings["DeviceName"],
+                devicePassword = ConfigurationManager.AppSettings["DevicePassword"];
+
+            int deviceDays;
+            if (!int.TryParse(ConfigurationManager.AppSettings["DeviceDays"], out deviceDays))
+            {
+                throw new ConfigurationErrorsException("The Device Days setting is invalid!");
+            }
 
             if (!Directory.Exists(sslPath))
             {
@@ -46,7 +53,7 @@ namespace CertificateAuthority
             {
                 if (!File.Exists(Path.Combine(rootPath, "rootCA.key")))
                 {
-                    process.StandardInput.WriteLine(string.Format(cmdExe + " genrsa -out {0}rootCA.key 2048 -des3", rootPath));
+                    process.StandardInput.WriteLine(cmdExe + " genrsa -out {0}rootCA.key 2048 -des3", rootPath);
 
                     Thread.Sleep(3000);
                 }
@@ -55,7 +62,7 @@ namespace CertificateAuthority
                 {
                     process.StandardInput.WriteLine(
                         cmdExe +
-                        string.Format(" req -x509 -new -nodes -key {0}rootCA.key -days 1024 -out {0}rootCA.pem -sha256",
+                        string.Format(" req -sha256 -x509 -new -nodes -key {0}rootCA.key -days 1024 -out {0}rootCA.pem",
                             rootPath) +
                         configOpenssl);
 
@@ -72,7 +79,7 @@ namespace CertificateAuthority
                                 " pkcs12 -export -out {0}rootCA.pfx -in {0}rootCA.pem -inkey {0}rootCA.key -name \"{1}\" -passout pass:{2}",
                                 rootPath,
                                 rootName,
-                                password));
+                                rootPassword));
 
                     Thread.Sleep(3000);
                 }
@@ -92,11 +99,11 @@ namespace CertificateAuthority
                 if (!File.Exists(Path.Combine(devicePath, "device.csr")))
                 {
                     process.StandardInput.WriteLine(cmdExe +
-                                                    string.Format(" req -key {0}device.key -out {0}device.csr -new -sha256",
+                                                    string.Format(" req -sha256 -new -key {0}device.key -out {0}device.csr",
                                                         devicePath) +
                                                     configSubAltDoms);
 
-                    new AnswerOpenSslForDevice(process, domainName).Answer();
+                    new AnswerOpenSslForDevice(process, deviceName).Answer();
 
                     Thread.Sleep(3000);
 
@@ -111,8 +118,8 @@ namespace CertificateAuthority
                     process.StandardInput.WriteLine(
                         cmdExe +
                         string.Format(
-                            " x509 -sha256 -req -in {1}device.csr -CA {0}rootCA.pem -CAkey {0}rootCA.key -CAcreateserial -out {1}device.crt -days 500 -extensions v3_req -extfile \"{2}\"",
-                            rootPath, devicePath, subAltDomsPath));
+                            " x509 -sha256 -req -in {1}device.csr -CA {0}rootCA.pem -CAkey {0}rootCA.key -CAcreateserial -out {1}device.crt -days {2} -extensions v3_req -extfile \"{3}\"",
+                            rootPath, devicePath, deviceDays, subAltDomsPath));
                 }
 
                 if (!File.Exists(Path.Combine(devicePath, "device.pem")))
@@ -133,15 +140,15 @@ namespace CertificateAuthority
                         string.Format(
                             " pkcs12 -export -out {0}device.pfx -in {0}device.pem -inkey {0}device.key -name \"{1}\" -passout pass:{2}",
                             devicePath,
-                            certName,
-                            password));
+                            deviceName,
+                            devicePassword));
 
                     Thread.Sleep(3000);
                 }
 
                 var x509 = new X509Certificate2(Path.Combine(devicePath, "device.crt"));
 
-                var ps1 = Resources.template
+                var ps1 = Resources.ps1template
                     .Replace("{rootCertPath}", Path.Combine(rootPath, "rootCA.pfx"))
                     .Replace("{deviceCertPath}", Path.Combine(devicePath, "device.pfx"))
                     .Replace("{thumbprint}", x509.Thumbprint.ToLower());
