@@ -54,7 +54,7 @@ namespace CertificateAuthority
             {
                 if (!File.Exists(Path.Combine(rootPath, "rootCA.key")))
                 {
-                    process.StandardInput.WriteLine(cmdExe + " genrsa -out {0}rootCA.key 2048 -des3", rootPath);
+                    process.StandardInput.WriteLine(cmdExe + " genrsa -out {0}rootCA.key 2048", rootPath);
 
                     Thread.Sleep(3000);
                 }
@@ -63,7 +63,7 @@ namespace CertificateAuthority
                 {
                     process.StandardInput.WriteLine(
                         cmdExe +
-                        string.Format(" req -sha256 -x509 -new -nodes -key {0}rootCA.key -days 1024 -out {0}rootCA.pem",
+                        string.Format(" req -sha256 -x509 -nodes -new -key {0}rootCA.key -days 1024 -out {0}rootCA.pem",
                             rootPath) +
                         configOpenssl);
 
@@ -77,7 +77,7 @@ namespace CertificateAuthority
                     process.StandardInput.WriteLine(
                             cmdExe +
                             string.Format(
-                                " pkcs12 -export -out {0}rootCA.pfx -in {0}rootCA.pem -inkey {0}rootCA.key -name \"{1}\" -passout pass:{2}",
+                                " pkcs12 -export -out {0}rootCA.pfx -in {0}rootCA.pem -inkey {0}rootCA.key -name \"{1}\" -passout pass:{2} -cacerts",
                                 rootPath,
                                 rootName,
                                 rootPassword));
@@ -92,7 +92,7 @@ namespace CertificateAuthority
 
                 if (!File.Exists(Path.Combine(devicePath, "device.key")))
                 {
-                    process.StandardInput.WriteLine(cmdExe + string.Format(" genrsa -out {0}device.key 2048", devicePath));
+                    process.StandardInput.WriteLine(cmdExe + " genrsa -out {0}device.key 2048", devicePath);
 
                     Thread.Sleep(3000);
                 }
@@ -100,7 +100,7 @@ namespace CertificateAuthority
                 if (!File.Exists(Path.Combine(devicePath, "device.csr")))
                 {
                     process.StandardInput.WriteLine(cmdExe +
-                                                    string.Format(" req -sha256 -new -key {0}device.key -out {0}device.csr",
+                                                    string.Format(" req -sha256 -nodes -new -key {0}device.key -out {0}device.csr",
                                                         devicePath) +
                                                     configSubAltDoms);
 
@@ -128,7 +128,7 @@ namespace CertificateAuthority
                     process.StandardInput.WriteLine(
                         cmdExe +
                         string.Format(
-                            " x509 -sha256 -in {0}device.crt -out {0}device.pem -outform PEM",
+                            " x509 -sha256 -in {0}device.crt -out {0}device.pem -outform PEM -fingerprint",
                             devicePath));
 
                     Thread.Sleep(3000);
@@ -139,7 +139,7 @@ namespace CertificateAuthority
                     process.StandardInput.WriteLine(
                         cmdExe +
                         string.Format(
-                            " pkcs12 -export -out {0}device.pfx -in {0}device.pem -inkey {0}device.key -name \"{1}\" -passout pass:{2}",
+                            " pkcs12 -export -out {0}device.pfx -in {0}device.pem -inkey {0}device.key -name \"{1}\" -passout pass:{2} -clcerts",
                             devicePath,
                             deviceName,
                             devicePassword));

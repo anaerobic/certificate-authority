@@ -1,13 +1,13 @@
 =============================================================================
-OpenSSL v0.9.8r                                Precompiled Binaries for Win32
+OpenSSL v1.0.2a                                Precompiled Binaries for Win64
 -----------------------------------------------------------------------------
 
                          *** Release Information ***
 
-Release Date:     April 10, 2011
+Release Date:     Mrz 20, 2015
 
-Author:           Arvid Winkelsdorf, digivendo GmbH, www.digivendo.com
-                  for The Indy Project, www.indyproject.org
+Author:           Frederik A. Winkelsdorf (opendec.wordpress.com)
+                  for the Indy Project (www.indyproject.org)
 
 Requirements:     Indy 10.5.5+ (SVN Version or Delphi 2009 and newer)
 
@@ -15,7 +15,7 @@ Dependencies:     The libraries have no noteworthy dependencies
 
 Installation:     Copy both DLL files into your application directory
 
-Supported OS:     Windows 2000 up to Windows 7
+Supported OS:     Windows XP x64 up to Windows 8 x64
 
 -----------------------------------------------------------------------------
 
@@ -39,15 +39,18 @@ SOFTWARE AND/OR PATENTS.
 
 -----------------------------------------------------------------------------
 
-                          *** Build Information ***
+                       *** Build Information Win64 ***
 
-Built with:       Microsoft Visual C++ 2008 Express Edition
-                  The Netwide Assembler (NASM) v2.09.06
-                  Strawberry Perl v5.12.2.0
+Built with:       Windows Server 2003 SP1 Platform SDK for x64
+                  The Netwide Assembler (NASM) v2.11.05 Win32
+                  Strawberry Perl v5.20.0.1 Win32 Portable
+                  Windows PowerShell
+                  FinalBuilder 7 Embarcadero Edition
 
-Commands:         perl configure VC-WIN32
-                  ms\do_nasm
-                  adjusted ms\ntdll.mak       (replaced "/MD" with "/MT")
+Shell:            Windows XP x64 Build Environment (Retail)
+
+Commands:         perl configure VC-WIN64A
+                  ms\do_win64a
                   adjusted ms\version32.rc    (Indy Information inserted)
                   nmake -f ms\ntdll.mak
                   nmake -f ms\ntdll.mak test
