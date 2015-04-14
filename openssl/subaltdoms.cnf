@@ -206,8 +206,8 @@ keyUsage = nonRepudiation, digitalSignature, keyEncipherment
 subjectAltName = @alt_names
 
 [alt_names]
-DNS.1 = ltfinc.dev
-DNS.2 = *.ltfinc.dev
+DNS.1 = lacolhost.com
+DNS.2 = *.lacolhost.com
 DNS.3 = localhost
 IP.1 = 127.0.0.1
 
